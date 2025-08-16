@@ -1,1 +1,956 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Medical</title></head><body><h1>Medical Page</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Fun Drawing Tool</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: white;
+      overflow-y: auto;
+      touch-action: auto;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px;
+      min-height: 100vh;
+      overflow-y: auto;
+      touch-action: auto;
+    }
+    .top-buttons {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 18.9px;
+      max-width: 802.9px;
+    }
+    .top-buttons a.button,
+    .top-buttons .upload-container {
+      width: 192.725px;
+      margin: 0;
+      touch-action: none;
+    }
+    .canvas-and-controls {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      width: 100%;
+      justify-content: center;
+      gap: 20px;
+    }
+    .canvas-download-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    #canvas-container {
+      width: 540.1px;
+      height: 338.8px;
+      max-width: 100%;
+      background-image: url('https://i.imgur.com/MdVvgRq.png');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      flex-shrink: 0;
+      margin-left: 0px;
+      background-color: #f0f0f0;
+      touch-action: none;
+      aspect-ratio: 1513 / 957;
+    }
+    .main-container.portrait #canvas-container {
+      width: 425.7px;
+      height: 675.4px;
+      max-width: 100%;
+      aspect-ratio: 425.7 / 675.4;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      display: block;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex-grow: 1;
+      max-width: 242.9px;
+      margin-top: -18.9px;
+    }
+    .main-container:not(.portrait) .controls {
+      margin-top: -18.9px;
+    }
+    .photo-controls {
+      display: flex;
+      flex-direction: column;
+      width: 242.9px;
+      margin-top: 11.34px;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      width: 100%;
+    }
+    .slider-container label {
+      width: 80px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .slider-container input[type="range"] {
+      flex: 1;
+      height: 20px;
+      touch-action: pan-x;
+      width: 100%;
+    }
+    .button-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 12.56px;
+    }
+    .button-group button {
+      height: 50px;
+      background-color: #012F87;
+      color: white;
+      border: 3px solid #012F87;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .text-inputs {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-top: 3.78px;
+    }
+    .color-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      width: 100%;
+      margin-top: 5px;
+    }
+    .color-buttons button {
+      flex: 1;
+      height: 50px;
+      border: 3px solid;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .color-buttons .blue-btn {
+      background-color: #012F87;
+      border-color: #012F87;
+    }
+    .color-buttons .light-purple-btn {
+      background-color: #94087B;
+      border-color: #94087B;
+    }
+    .color-buttons .dark-grey-btn {
+      background-color: #333333;
+      border-color: #333333;
+    }
+    .download-section {
+      width: 548.76px;
+      margin-top: 6.68px;
+    }
+    .main-container.portrait .download-section {
+      width: 434.36px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+    .download-section button {
+      width: 100%;
+      height: 39px;
+      touch-action: none;
+      background-color: #012F87;
+    }
+    .download-section button:active {
+      background-color: #4D8CFF;
+    }
+    .text-input-container {
+      display: flex;
+      flex-direction: column;
+      margin: 2mm 0;
+      width: 100%;
+    }
+    .text-input-container textarea {
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+      border: 2px solid #000000;
+      border-radius: 5px;
+      box-sizing: border-box;
+      resize: none;
+      height: 100px;
+      font-family: Arial, sans-serif;
+    }
+    button, a.button, label.upload-button {
+      margin: 0;
+      cursor: pointer;
+      background-color: #012F87;
+      color: white;
+      border: 3px solid #012F87;
+      border-radius: 8px;
+      height: 50px;
+      text-align: center;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    a.button, label.upload-button {
+      height: 78px;
+    }
+    button:hover:not(.color-buttons button), a.button:hover, label.upload-button:hover {
+      background-color: #00205b;
+    }
+    .color-buttons button:hover {
+      opacity: 0.8;
+    }
+    .hidden {
+      display: none;
+    }
+    .download-container {
+      margin: 10px 0;
+      width: 100%;
+    }
+    .upload-container {
+      position: relative;
+    }
+    .upload-container input[type="file"] {
+      display: none;
+    }
+    #loading-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+    .disclaimer {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 10px;
+      max-width: 802.9px;
+    }
+    @media (max-width: 740px) {
+      .main-container {
+        align-items: center;
+        min-height: auto;
+      }
+      .top-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 100%;
+      }
+      .top-buttons a.button,
+      .top-buttons .upload-container {
+        width: calc(45% + 3.78px);
+        box-sizing: border-box;
+        height: 35px;
+      }
+      a.button, label.upload-button {
+        height: 35px;
+        font-size: 10px;
+        padding: 0 8px;
+      }
+      .canvas-and-controls {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .canvas-download-wrapper {
+        align-items: center;
+        width: 100%;
+      }
+      #canvas-container {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 0;
+        margin-left: 0;
+      }
+      .main-container.portrait #canvas-container {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+      }
+      .controls {
+        align-items: center;
+        max-width: 100%;
+        width: 100%;
+        margin-top: 0;
+      }
+      .photo-controls {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 0;
+      }
+      .slider-container {
+        width: 100%;
+        margin: 10px 0;
+      }
+      .slider-container input[type="range"] {
+        height: 20px;
+        width: 100%;
+      }
+      .button-group {
+        width: 100%;
+        margin-top: 12.56px;
+      }
+      .button-group button {
+        height: 35px;
+        font-size: 12px;
+      }
+      .color-buttons {
+        margin-top: 5px;
+      }
+      .color-buttons button {
+        height: 35px;
+      }
+      .text-inputs {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 3.2px;
+      }
+      .text-input-container {
+        width: 100%;
+        margin: 5px 0;
+      }
+      .text-input-container textarea {
+        font-size: 12px;
+        padding: 6px;
+        height: 80px;
+        width: 100%;
+      }
+      .download-section {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 0;
+        margin-bottom: 3.2px;
+      }
+      .download-section button {
+        height: 35px;
+        font-size: 12px;
+        width: 100%;
+      }
+      .disclaimer {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="disclaimer">
+      This is a fun drawing tool for creating cool sketches! No data is saved or shared.
+    </div>
+    <div class="top-buttons">
+      <a href="http://tiny.cc/BlueCard" target="_blank" class="button">GET SKETCH BASE</a>
+      <a href="https://www.pixelcut.ai/t/background-remover" target="_blank" class="button">REMOVE PHOTO BACKGROUND</a>
+      <div class="upload-container">
+        <label for="sketchBaseUpload" class="upload-button">UPLOAD SKETCH BASE</label>
+        <input type="file" id="sketchBaseUpload" accept="image/*">
+      </div>
+      <div class="upload-container">
+        <label for="photoUpload" class="upload-button">UPLOAD PHOTO</label>
+        <input type="file" id="photoUpload" accept="image/*">
+      </div>
+    </div>
+    <div class="canvas-and-controls">
+      <div class="canvas-download-wrapper">
+        <div id="canvas-container">
+          <div id="loading-message">Loading...</div>
+        </div>
+        <div class="download-section">
+          <div class="download-container">
+            <button id="download">DOWNLOAD SKETCH</button>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="photo-controls">
+          <div id="photo-controls" class="hidden">
+            <div class="slider-container">
+              <label for="scale">Scale: </label>
+              <input type="range" id="scale" min="0.1" max="2" step="0.01" value="1.25" />
+            </div>
+            <div class="button-group">
+              <button id="sendBack">MOVE TO BACK</button>
+              <button id="bringFront">BRING TO FRONT</button>
+            </div>
+            <div class="text-inputs">
+              <div class="text-input-container">
+                <textarea id="drawingBoxInput" autocomplete="off" maxlength="500"></textarea>
+              </div>
+              <div class="color-buttons">
+                <button class="blue-btn"></button>
+                <button class="light-purple-btn"></button>
+                <button class="dark-grey-btn"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let sketchBaseImg, photoImg, backgroundImg;
+    let xPos = 0, yPos = 0, scaleVal = 1.25;
+    let sketchBaseLoaded = false, photoLoaded = false, backgroundLoaded = false;
+    let photoAspectRatio = 1;
+    let canvasWidth = 540.1, canvasHeight = 338.8;
+    let isPortrait = false;
+    let drawingBoxText = "";
+    let textColor = '#000066'; // Default color for Drawing Box text
+    let isDraggingPhoto = false;
+    let photoDragStartX, photoDragStartY;
+    let photoInFront = true;
+    let originalSketchBaseWidth, originalSketchBaseHeight;
+    let originalPhotoHeight = 0;
+    const loadingMessage = document.getElementById('loading-message');
+    let canvas;
+    let canvasContainer;
+
+    // Settings for the Drawing Box (transparent, fits 5-6 lines)
+    const drawingBoxX = 232.25; // Right half of canvas
+    const drawingBoxY = 150.73; // Upper part of canvas
+    const drawingBoxWidth = 270.05; // Width of the text area
+    const drawingBoxHeight = 120; // Height for multiple lines
+    const drawingBoxTextX = drawingBoxX;
+    const drawingBoxTextY = 301; // Bottom of the text area
+    const baseTextFontSize = 20;
+    const baseMaxTextWidth = drawingBoxWidth;
+
+    // Load the default background image
+    function preload() {
+      loadImage(
+        'https://i.imgur.com/MdVvgRq.png',
+        (img) => {
+          backgroundImg = img;
+          backgroundLoaded = true;
+          loadingMessage.style.display = 'none';
+        },
+        () => {
+          console.error('Failed to load background image');
+          backgroundLoaded = false;
+          backgroundImg = null;
+          loadingMessage.style.display = 'none';
+        }
+      );
+    }
+
+    // Set up the canvas and controls
+    function setup() {
+      canvas = createCanvas(canvasWidth, canvasHeight);
+      canvas.parent('canvas-container');
+      canvasContainer = document.getElementById('canvas-container');
+      clear();
+      document.querySelector('#photo-controls').classList.add('hidden');
+      document.querySelector('.download-section').classList.remove('hidden');
+      textFont('Arial');
+      updateCanvasSize();
+
+      canvas.canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+      canvas.canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+      canvas.canvas.addEventListener('touchend', handleTouchEnd);
+      canvas.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    }
+
+    // Adjust canvas size based on device and image
+    function updateCanvasSize() {
+      const isMobile = window.innerWidth <= 740;
+      let maxCanvasWidth = isPortrait ? 425.7 : 540.1;
+      let maxCanvasHeight = isPortrait ? 675.4 : 338.8;
+
+      if (sketchBaseLoaded && sketchBaseImg) {
+        let sketchBaseAspect = sketchBaseImg.width / sketchBaseImg.height;
+        let maxAspect = maxCanvasWidth / maxCanvasHeight;
+
+        if (sketchBaseAspect > maxAspect) {
+          canvasWidth = maxCanvasWidth;
+          canvasHeight = canvasWidth / sketchBaseAspect;
+        } else {
+          canvasHeight = maxCanvasHeight;
+          canvasWidth = canvasHeight * sketchBaseAspect;
+        }
+      } else if (backgroundLoaded && backgroundImg) {
+        let bgAspect = backgroundImg.width / backgroundImg.height;
+        let maxAspect = maxCanvasWidth / maxCanvasHeight;
+
+        if (bgAspect > maxAspect) {
+          canvasWidth = maxCanvasWidth;
+          canvasHeight = canvasWidth / bgAspect;
+        } else {
+          canvasHeight = maxCanvasHeight;
+          canvasWidth = canvasHeight * bgAspect;
+        }
+      } else {
+        canvasWidth = maxCanvasWidth;
+        canvasHeight = maxCanvasHeight;
+      }
+
+      if (isMobile) {
+        const availableWidth = window.innerWidth - 40;
+        if (canvasWidth > availableWidth) {
+          let scaleFactor = availableWidth / canvasWidth;
+          canvasWidth = availableWidth;
+          canvasHeight = canvasHeight * scaleFactor;
+        }
+      }
+
+      document.getElementById('canvas-container').style.width = `${canvasWidth}px`;
+      document.getElementById('canvas-container').style.height = `${canvasHeight}px`;
+      resizeCanvas(canvasWidth, canvasHeight);
+      if (photoLoaded) document.querySelector('#photo-controls').classList.remove('hidden');
+    }
+
+    // Adjust text size to fit within Drawing Box
+    function adjustFontSizeForText(text, initialFontSize, maxWidth, maxHeight, maxLines = 6) {
+      const isMobile = window.innerWidth <= 740;
+      const baseWidth = isPortrait ? 425.7 : 540.1;
+      const widthRatio = canvasWidth / baseWidth;
+      let fontSize = initialFontSize * widthRatio;
+
+      if (isMobile) {
+        fontSize = initialFontSize * widthRatio * 0.8;
+      }
+
+      textFont('Arial');
+      textSize(fontSize);
+      let lines = text.split('\n');
+      let lineHeight = fontSize * 1.2;
+      let totalHeight = lines.length * lineHeight;
+
+      let maxTextWidth = 0;
+      for (let line of lines) {
+        let textWidthVal = textWidth(line);
+        if (textWidthVal > maxTextWidth) maxTextWidth = textWidthVal;
+      }
+      while (maxTextWidth > maxWidth * widthRatio && fontSize > 8) {
+        fontSize -= 1;
+        textSize(fontSize);
+        maxTextWidth = 0;
+        for (let line of lines) {
+          let textWidthVal = textWidth(line);
+          if (textWidthVal > maxTextWidth) maxTextWidth = textWidthVal;
+        }
+      }
+
+      lineHeight = fontSize * 1.2;
+      totalHeight = Math.min(lines.length, maxLines) * lineHeight;
+      while (totalHeight > maxHeight && fontSize > 8) {
+        fontSize -= 1;
+        textSize(fontSize);
+        lineHeight = fontSize * 1.2;
+        totalHeight = Math.min(lines.length, maxLines) * lineHeight;
+      }
+
+      if (isMobile) {
+        fontSize = Math.min(fontSize, 16 * widthRatio);
+      } else {
+        fontSize = Math.min(fontSize, 20 * widthRatio);
+      }
+
+      return fontSize;
+    }
+
+    // Check if mouse is over the photo
+    function isMouseOverPhoto(photoImg, xPos, yPos, scaleVal, aspectRatio) {
+      if (!photoImg) return false;
+      let scaledHeight = photoImg.height * scaleVal;
+      let scaledWidth = scaledHeight * aspectRatio;
+      let photoX = xPos + canvasWidth / 2 - scaledWidth / 2;
+      let photoY = yPos + canvasHeight / 2 - scaledHeight / 2;
+      return mouseX >= photoX && mouseX <= photoX + scaledWidth && mouseY >= photoY && mouseY <= photoY + scaledHeight;
+    }
+
+    // Check if touch is over the photo
+    function isTouchWithinPhoto(touchX, touchY, xPos, yPos, scaleVal) {
+      if (!photoLoaded || !photoImg) return false;
+      const canvasRect = canvas.canvas.getBoundingClientRect();
+      const touchRelativeX = touchX - canvasRect.left;
+      const touchRelativeY = touchY - canvasRect.top;
+      let scaledHeight = photoImg.height * scaleVal;
+      let scaledWidth = scaledHeight * photoAspectRatio;
+      let photoX = xPos + canvasWidth / 2 - scaledWidth / 2;
+      let photoY = yPos + canvasHeight / 2 - scaledHeight / 2;
+      let photoRight = photoX + scaledWidth;
+      let photoBottom = photoY + scaledHeight;
+      return touchRelativeX >= photoX && touchRelativeX <= photoRight && touchRelativeY >= photoY && touchRelativeY <= photoBottom;
+    }
+
+    // Start dragging photo
+    function mousePressed() {
+      if (photoLoaded && isMouseOverPhoto(photoImg, xPos, yPos, scaleVal, photoAspectRatio)) {
+        isDraggingPhoto = true;
+        photoDragStartX = mouseX - xPos;
+        photoDragStartY = mouseY - yPos;
+      }
+    }
+
+    // Stop dragging photo
+    function mouseReleased() {
+      isDraggingPhoto = false;
+    }
+
+    // Drag photo
+    function mouseDragged() {
+      if (isDraggingPhoto) {
+        xPos = mouseX - photoDragStartX;
+        yPos = mouseY - photoDragStartY;
+      }
+    }
+
+    // Handle touch start for dragging
+    function handleTouchStart(event) {
+      event.preventDefault();
+      const touches = event.touches;
+      if (touches.length === 1) {
+        const touch = touches[0];
+        const canvasRect = canvas.canvas.getBoundingClientRect();
+        const touchX = touch.clientX - canvasRect.left;
+        const touchY = touch.clientY - canvasRect.top;
+        if (isTouchWithinPhoto(touchX, touchY, xPos, yPos, scaleVal)) {
+          isDraggingPhoto = true;
+          photoDragStartX = touchX - xPos;
+          photoDragStartY = touchY - yPos;
+        }
+      }
+    }
+
+    // Handle touch move for dragging
+    function handleTouchMove(event) {
+      event.preventDefault();
+      const touches = event.touches;
+      if (touches.length === 1 && isDraggingPhoto) {
+        const touch = touches[0];
+        const canvasRect = canvas.canvas.getBoundingClientRect();
+        const touchX = touch.clientX - canvasRect.left;
+        const touchY = touch.clientY - canvasRect.top;
+        xPos = touchX - photoDragStartX;
+        yPos = touchY - photoDragStartY;
+      }
+    }
+
+    // Handle touch end
+    function handleTouchEnd(event) {
+      isDraggingPhoto = false;
+    }
+
+    // Render text in the Drawing Box (transparent, starts at bottom, stacks up)
+    function drawMainText() {
+      fill(textColor);
+      textAlign(LEFT, BOTTOM);
+      textFont('Arial');
+      textWrap(WORD);
+      if (drawingBoxText) {
+        let adjustedFontSize = adjustFontSizeForText(drawingBoxText, baseTextFontSize, baseMaxTextWidth, drawingBoxHeight);
+        textSize(adjustedFontSize);
+        let lines = drawingBoxText.split('\n').slice(0, 6);
+        let lineHeight = adjustedFontSize * 1.2;
+        for (let i = lines.length - 1, j = 0; i >= 0; i--, j++) {
+          let yPos = drawingBoxTextY - (j * lineHeight);
+          if (yPos >= drawingBoxY) {
+            text(lines[i], drawingBoxTextX, yPos, drawingBoxWidth);
+          }
+        }
+      }
+    }
+
+    // Draw the canvas content
+    function draw() {
+      clear();
+      background(255); // White base layer
+
+      if (backgroundLoaded && backgroundImg && !sketchBaseLoaded) {
+        let imgAspect = backgroundImg.width / backgroundImg.height;
+        let canvasAspect = canvasWidth / canvasHeight;
+        let drawWidth, drawHeight;
+
+        if (imgAspect > canvasAspect) {
+          drawHeight = canvasHeight;
+          drawWidth = drawHeight * imgAspect;
+        } else {
+          drawWidth = canvasWidth;
+          drawHeight = drawWidth / imgAspect;
+        }
+
+        image(backgroundImg, 0, 0, drawWidth, drawHeight);
+      }
+
+      if (sketchBaseLoaded && sketchBaseImg) {
+        if (photoLoaded && photoImg && !photoInFront) {
+          push();
+          translate(xPos + canvasWidth / 2, yPos + canvasHeight / 2);
+          scale(scaleVal);
+          imageMode(CENTER);
+          image(photoImg, 0, 0, photoImg.width, photoImg.height);
+          pop();
+        }
+        image(sketchBaseImg, 0, 0, canvasWidth, canvasHeight);
+        if (photoLoaded && photoImg && photoInFront) {
+          push();
+          translate(xPos + canvasWidth / 2, yPos + canvasHeight / 2);
+          scale(scaleVal);
+          imageMode(CENTER);
+          image(photoImg, 0, 0, photoImg.width, photoImg.height);
+          pop();
+        }
+      } else if (photoLoaded && photoImg) {
+        push();
+        translate(xPos + canvasWidth / 2, yPos + canvasHeight / 2);
+        scale(scaleVal);
+        imageMode(CENTER);
+        image(photoImg, 0, 0, photoImg.width, photoImg.height);
+        pop();
+      }
+
+      // Draw text in the Drawing Box
+      drawMainText();
+    }
+
+    // Validate uploaded image files
+    function validateFile(file, type) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSizeMB = 10;
+      if (!allowedTypes.includes(file.type)) return `Please upload a ${type.toLowerCase()} in JPEG, PNG, or GIF format.`;
+      if (file.size > maxSizeMB * 1024 * 1024) return `The ${type.toLowerCase()} file exceeds the ${maxSizeMB}MB size limit.`;
+      return null;
+    }
+
+    // Set up event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      const sketchBaseUpload = document.getElementById('sketchBaseUpload');
+      const photoUpload = document.getElementById('photoUpload');
+      const drawingBoxInput = document.getElementById('drawingBoxInput');
+      const scaleSlider = document.getElementById('scale');
+      const sendBackButton = document.getElementById('sendBack');
+      const bringFrontButton = document.getElementById('bringFront');
+      const downloadButton = document.getElementById('download');
+      const blueBtn = document.querySelector('.blue-btn');
+      const lightPurpleBtn = document.querySelector('.light-purple-btn');
+      const darkGreyBtn = document.querySelector('.dark-grey-btn');
+
+      window.addEventListener('resize', updateCanvasSize);
+
+      // Upload a sketch base image
+      sketchBaseUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const validationError = validateFile(file, 'Sketch Base');
+        if (validationError) {
+          alert(validationError);
+          sketchBaseUpload.value = '';
+          return;
+        }
+        const url = URL.createObjectURL(file);
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = 'Loading sketch base...';
+        loadImage(url, (img) => {
+          let targetWidth = 1344;
+          let targetHeight = 841;
+          let tempCanvas = createGraphics(targetWidth, targetHeight);
+          tempCanvas.image(img, 0, 0, targetWidth, targetHeight);
+          sketchBaseImg = tempCanvas;
+          originalSketchBaseWidth = targetWidth;
+          originalSketchBaseHeight = targetHeight;
+          isPortrait = targetHeight > targetWidth;
+          document.querySelector('.main-container').classList.toggle('portrait', isPortrait);
+          sketchBaseLoaded = true;
+          updateCanvasSize();
+          loadingMessage.style.display = 'none';
+          URL.revokeObjectURL(url);
+          sketchBaseUpload.value = '';
+        }, (err) => {
+          console.error('Error loading sketch base:', err);
+          alert('Error loading sketch base');
+          loadingMessage.style.display = 'none';
+          URL.revokeObjectURL(url);
+          sketchBaseUpload.value = '';
+        });
+      });
+
+      // Upload a photo
+      photoUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const validationError = validateFile(file, 'Photo');
+        if (validationError) {
+          alert(validationError);
+          photoUpload.value = '';
+          return;
+        }
+        if (photoLoaded) {
+          alert('Only one photo can be uploaded.');
+          photoUpload.value = '';
+          return;
+        }
+        const url = URL.createObjectURL(file);
+        loadingMessage.style.display = 'block';
+        loadingMessage.textContent = 'Loading photo...';
+        loadImage(url, (img) => {
+          photoAspectRatio = img.width / img.height;
+          photoImg = createImage(img.width, img.height);
+          photoImg.copy(img, 0, 0, img.width, img.height, 0, 0, img.width, img.height);
+          scaleVal = (img.width > canvasWidth * 2 || img.height > canvasHeight * 2) ? 0.5 : 1.25;
+          originalPhotoHeight = img.height;
+          xPos = 0;
+          yPos = 0;
+          photoInFront = true;
+          photoLoaded = true;
+          loadingMessage.style.display = 'none';
+          updateCanvasSize();
+          scaleSlider.value = scaleVal;
+          URL.revokeObjectURL(url);
+          photoUpload.value = '';
+        }, (err) => {
+          console.error('Error loading photo:', err);
+          alert('Error loading photo');
+          loadingMessage.style.display = 'none';
+          URL.revokeObjectURL(url);
+          photoUpload.value = '';
+        });
+      });
+
+      // Update Drawing Box text
+      drawingBoxInput.addEventListener('input', (e) => drawingBoxText = e.target.value);
+
+      // Adjust photo scale
+      scaleSlider.addEventListener('input', (e) => {
+        scaleVal = parseFloat(e.target.value);
+      });
+
+      // Move photo behind sketch base
+      sendBackButton.addEventListener('click', () => {
+        photoInFront = false;
+      });
+
+      // Bring photo to front
+      bringFrontButton.addEventListener('click', () => {
+        photoInFront = true;
+      });
+
+      // Change text color with color buttons
+      blueBtn.addEventListener('click', () => {
+        textColor = '#012F87';
+      });
+      lightPurpleBtn.addEventListener('click', () => {
+        textColor = '#94087B';
+      });
+      darkGreyBtn.addEventListener('click', () => {
+        textColor = '#333333';
+      });
+
+      // Download the sketch
+      downloadButton.addEventListener('click', () => {
+        const resolutionMultiplier = 1;
+        const highResWidth = sketchBaseLoaded ? originalSketchBaseWidth : 540.1;
+        const highResHeight = sketchBaseLoaded ? originalSketchBaseHeight : 338.8;
+        let highResCanvas = createGraphics(highResWidth, highResHeight);
+        highResCanvas.clear();
+        highResCanvas.background(255); // White base layer
+
+        if (backgroundLoaded && backgroundImg && !sketchBaseLoaded) {
+          let imgAspect = backgroundImg.width / backgroundImg.height;
+          let canvasAspect = highResWidth / highResHeight;
+          let drawWidth, drawHeight;
+          if (imgAspect > canvasAspect) {
+            drawHeight = highResHeight;
+            drawWidth = drawHeight * imgAspect;
+          } else {
+            drawWidth = highResWidth;
+            drawHeight = drawWidth / imgAspect;
+          }
+          highResCanvas.image(backgroundImg, 0, 0, drawWidth, drawHeight);
+        }
+
+        if (sketchBaseLoaded && sketchBaseImg) {
+          if (photoLoaded && photoImg && !photoInFront) {
+            highResCanvas.push();
+            highResCanvas.translate((xPos + canvasWidth / 2) * (highResWidth / canvasWidth), (yPos + canvasHeight / 2) * (highResHeight / canvasHeight));
+            highResCanvas.scale(scaleVal * (highResWidth / canvasWidth));
+            highResCanvas.imageMode(CENTER);
+            highResCanvas.image(photoImg, 0, 0, photoImg.width, photoImg.height);
+            highResCanvas.pop();
+          }
+          highResCanvas.image(sketchBaseImg, 0, 0, highResWidth, highResHeight);
+          if (photoLoaded && photoImg && photoInFront) {
+            highResCanvas.push();
+            highResCanvas.translate((xPos + canvasWidth / 2) * (highResWidth / canvasWidth), (yPos + canvasHeight / 2) * (highResHeight / canvasHeight));
+            highResCanvas.scale(scaleVal * (highResWidth / canvasWidth));
+            highResCanvas.imageMode(CENTER);
+            highResCanvas.image(photoImg, 0, 0, photoImg.width, photoImg.height);
+            highResCanvas.pop();
+          }
+        } else if (photoLoaded && photoImg) {
+          highResCanvas.push();
+          highResCanvas.translate((xPos + canvasWidth / 2) * (highResWidth / canvasWidth), (yPos + canvasHeight / 2) * (highResHeight / canvasHeight));
+          highResCanvas.scale(scaleVal * (highResWidth / canvasWidth));
+          highResCanvas.imageMode(CENTER);
+          highResCanvas.image(photoImg, 0, 0, photoImg.width, photoImg.height);
+          highResCanvas.pop();
+        }
+
+        // Draw text in the Drawing Box
+        highResCanvas.fill(textColor);
+        highResCanvas.textAlign(LEFT, BOTTOM);
+        highResCanvas.textFont('Arial');
+        highResCanvas.textWrap(WORD);
+        if (drawingBoxText) {
+          let adjustedFontSize = adjustFontSizeForText(drawingBoxText, baseTextFontSize, baseMaxTextWidth, drawingBoxHeight);
+          highResCanvas.textSize(adjustedFontSize * (highResWidth / canvasWidth));
+          let lines = drawingBoxText.split('\n').slice(0, 6);
+          let lineHeight = adjustedFontSize * 1.2 * (highResHeight / canvasHeight);
+          for (let i = lines.length - 1, j = 0; i >= 0; i--, j++) {
+            let yPos = (drawingBoxTextY * (highResHeight / canvasHeight)) - (j * lineHeight);
+            if (yPos >= drawingBoxY * (highResHeight / canvasHeight)) {
+              highResCanvas.text(lines[i], drawingBoxTextX * (highResWidth / canvasWidth), yPos, drawingBoxWidth * (highResWidth / canvasWidth));
+            }
+          }
+        }
+
+        highResCanvas.canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          const randomNum = Math.floor(Math.random() * 11) + 1;
+          link.download = `sketch${randomNum}.png`;
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      });
+    });
+  </script>
+</body>
+</html>
